@@ -2,6 +2,9 @@
 #include <iostream>
 #include <conio.h>
 #include <windows.h>
+#include <iomanip>
+
+using namespace std;
 
 //Структуры Text и Sentence (со статическими массивами):
 const int maxWords = 40;
@@ -26,7 +29,7 @@ Sentence::Sentence() {
 
 const int maxSentences = 10;
 struct Text {
-	Sentence* sentences[maxSentences]; //массив из указателей на предложения в тексте
+	Sentence sentences[maxSentences]; //массив из указателей на предложения в тексте
 	int nSentences; //фактическое число слов в предложении
 	Sentence& operator[](int index); //перегрузка оператора индексации
 	int sentencesAttributes[maxSentences]; //массив признаков придложений:
@@ -42,6 +45,7 @@ Text::Text() {
 		sentencesAttributes[i] = 0;
 	}
 }
+//=====================================================================
 
 Text& GetText(char*);
 Sentence& GetSentence(char*);
@@ -53,7 +57,7 @@ Sentence& Text::operator[](int index)
 //---------------------------------------------------------------------
 char*& Sentence::operator[](int index)
 {
-	words[index];
+	return words[index];
 }
 //---------------------------------------------------------------------
 ostream& operator <<(ostream& out, Sentence& sentence)
@@ -66,27 +70,81 @@ ostream& operator <<(ostream& out, Sentence& sentence)
 //---------------------------------------------------------------------
 ostream& operator <<(ostream& out, Text& text)
 {
-	for (int i = 0; i < text.nSentences; i++)
+	for (int i = 0; i < text.nSentences - 1; i++)
 		out << text.sentences[i] << '.' << endl;
 	return out;
+}
+//---------------------------------------------------------------------
+void markRepeatedWord(Text& text)       //отметить в тексте повторяющеися слова 
+{
+	for (int k = 0; k < text.nSentences; k++) 
+	{
+		for (int i = 0; i < text.sentences[k].nWords; i++)
+		{
+			if (text.sentences[k].wordsAttributes[i] == 0)
+			{
+				for (int j = i + 1; j < text[k].nWords; j++)
+				{
+					if (strcmp(text[k][i], text[k][j]) == 0)
+					{
+						text[k].wordsAttributes[j] = 2; //повторное вхождение слова
+						text[k].wordsAttributes[i] = 1; //первое вхождение слова
+					}
+				}
+			}
+		}
+	}
+}
+//---------------------------------------------------------------------
+Text& GetText(char* txt) {
+	Text text = *new Text;
+	const char* sentenceDelim = ".";
+	char* token, * nextToken = txt;
+	while (token = strtok_s(nextToken, sentenceDelim, &nextToken))
+		text.sentences[text.nSentences++] = GetSentence(token);
+	return text;
 }
 //---------------------------------------------------------------------
 Sentence& GetSentence(char* str) {
 	Sentence sentence = *new Sentence;
 	sentence.nWords = 0;
-	char* wordDelims = " ,";
-	char* word, * nextWord;
+	const char* wordDelims = " ,";
+	char* word, * nextWord = str;
 	while (word = strtok_s(nextWord, wordDelims, &nextWord))
 		sentence.words[sentence.nWords++] = word;
 	return sentence;
 }
 //---------------------------------------------------------------------
-Text& GetText(char* txt) {
-	Text text = *new Text;
-	char* sentenceDelim = ".";
-	char* token, * nextToken = txt;
-	while (token = strtok_s(nextToken, sentenceDelim, &nextToken))
-		text.sentences[text.nSentences++] = GetSentence(token);
-	return text;
+char* inputText()
+{
+	int n = 100; //начальный размер буфера
+	int count = 0;
+	char* str = new char[n];
+	cout << "\n Введите текст из латинских букв, пробелов и знаков пунктуации,\n"
+		<< "заканчивающийся символом \"конец текста\" (нажмите Enter): \n";
+	char symb;
+	//ввод текста
+	while ((symb = _getch()) != char(13))
+	{
+		switch (symb)
+		{
+		case 8:
+			if (count != 0) {
+				_putch('\b');
+				_putch(' ');
+				_putch('\b');
+				str[--count] = '0';
+			}
+			break;
+		default:
+			if (((symb >= 'a') && (symb <= 'z')) || ((symb >= 'A') && (symb <= 'Z')) || (symb == ',') || (symb == ' ') || (symb == '.')) {
+				_putch(symb);
+				str[count] = symb;
+				count++;
+			}
+		}
+	}
+	_putch('\n');
+	return str;
 }
 //---------------------------------------------------------------------
