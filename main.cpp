@@ -49,7 +49,7 @@ int menu() {
     cout << "Âûáåðåòå äåéñòâèå: ";
     cin >> choice;
     while (cin.fail()) {
-        cout << "Îøèáêà ââîäà. Ïîâòîðèòå ââîä\n";
+        cout << "Îøèáêà ââîäà. Ïîâòîðèòå ââîä\n";//rohbornb
         cin.clear();
         cin.ignore(10, '\n');
         cout << "Âûáåðåòå äåéñòâèå: ";
