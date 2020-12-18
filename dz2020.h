@@ -26,7 +26,7 @@ Sentence::Sentence() {
 
 const int maxSentences = 10;
 struct Text {
-	Sentence* sentences[maxSentences]; //массив из указателей на предложения в тексте
+	Sentence sentences[maxSentences]; //массив из указателей на предложения в тексте
 	int nSentences; //фактическое число слов в предложении
 	Sentence& operator[](int index); //перегрузка оператора индексации
 	int sentencesAttributes[maxSentences]; //массив признаков придложений:
@@ -71,22 +71,29 @@ ostream& operator <<(ostream& out, Text& text)
 	return out;
 }
 //---------------------------------------------------------------------
-Sentence& GetSentence(char* str) {
-	Sentence sentence = *new Sentence;
-	sentence.nWords = 0;
-	char* wordDelims = " ,";
-	char* word, * nextWord;
-	while (word = strtok_s(nextWord, wordDelims, &nextWord))
-		sentence.words[sentence.nWords++] = word;
-	return sentence;
-}
-//---------------------------------------------------------------------
 Text& GetText(char* txt) {
 	Text text = *new Text;
-	char* sentenceDelim = ".";
+	const char* sentenceDelim = ".";
 	char* token, * nextToken = txt;
 	while (token = strtok_s(nextToken, sentenceDelim, &nextToken))
 		text.sentences[text.nSentences++] = GetSentence(token);
 	return text;
 }
 //---------------------------------------------------------------------
+Sentence& GetSentence(char* str) {
+	Sentence sentence = *new Sentence;
+	sentence.nWords = 0;
+	const char* wordDelims = " ,";
+	char* word, * nextWord = str;
+	while (word = strtok_s(nextWord, wordDelims, &nextWord))
+		sentence.words[sentence.nWords++] = word;
+	return sentence;
+}
+//---------------------------------------------------------------------
+char* loadText() {
+	const char* testTxt = "Уронили пол мишку на пол. Оторвали лапу мишке лапу.";
+	int size = strlen(testTxt) + 1;
+	char* txt = new char[size];
+	strcpy_s(txt, size, testTxt);
+	return txt;
+}
