@@ -1,7 +1,5 @@
 #include "dz2020.h"
 
-using namespace std;
-
 int menu();
 
 int main() {
@@ -15,18 +13,19 @@ int main() {
 	char ch = 'x';
 	while (true) {
 		switch (menu()) {
-		case 1: cout << "Выполнено действие 1";
+		case 1: txt = inputText();
+			cout << txt << endl;
 			break;
 		case 2: text = GetText(txt);
-			cout << text << endl;
+			cout << endl << text << endl;
 			break;
-		case 3: cout << "Выполнено действие 3";
+		case 3: cout << text[0][0] + 2 << endl;
+				break;
+		case 4: cout << "Выполнено действие dz18";
 			break;
-		case 4: cout << "Выполнено действие 4";
-			break;
-		//  <вызов функции, реализующей вариант другого члена группы>
-		case 5: cout << "Выполнено действие 5";
-			break;
+			//  <вызов функции, реализующей вариант другого члена группы>
+		case 5: cout << "Выполнено действие dz12";
+			break;	
 		case 6: delete[] txt; return 0;
 		default: cout << ("Надо вводить числа от 1 до 6\n");
 			break;
