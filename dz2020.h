@@ -1,20 +1,20 @@
-##pragma once
+#pragma once
 #include <iostream>
 #include <conio.h>
 #include <windows.h>
 
-//Ñòðóêòóðû Text è Sentence (ñî ñòàòè÷åñêèìè ìàññèâàìè):
+//Структуры Text и Sentence (со статическими массивами):
 const int maxWords = 40;
 struct Sentence {
-	char* words[maxWords];  //ìàññèâ óêàçàòåëåé íà ñëîâà â ïðåäëîæåíèè
-	int nWords;  //ôàêòè÷åñêîå ÷èñëî ñëîâ â ïðåäëîæåíèè
-	char*& operator[](int index); //ïåðåãðóçêà îïåðàòîðà èíäåêñàöèè
-	int wordsAttributes[maxWords]; //ìàññèâ ïðèçíàêîâ ñëîâ:
-		// 0 - àòðèáóò íå óñòàíîâëåí (ïî óìîë÷àíèþ);
-		// 1 - ñëîâî ñîâïàäàåò ñ ïîñëåäíèì ñëîâîì ïðåäëîæåíèÿ;
-		// 2 - ïîâòîðÿþùååñÿ ñëîâî;
-		// 3 - íåïîâòîðÿþùååñÿ ñëîâî.
-	Sentence(); //êîíñòðóêòîð
+	char* words[maxWords];  //массив указателей на слова в предложении
+	int nWords;  //фактическое число слов в предложении
+	char*& operator[](int index); //перегрузка оператора индексации
+	int wordsAttributes[maxWords]; //массив признаков слов:
+		// 0 - атрибут не установлен (по умолчанию);
+		// 1 - слово совпадает с последним словом предложения;
+		// 2 - повторяющееся слово;
+		// 3 - неповторяющееся слово.
+	Sentence(); //конструктор
 };
 Sentence::Sentence() {
 	nWords = 0;
@@ -26,15 +26,15 @@ Sentence::Sentence() {
 
 const int maxSentences = 10;
 struct Text {
-	Sentence* sentences[maxSentences]; //ìàññèâ èç óêàçàòåëåé íà ïðåäëîæåíèÿ â òåêñòå
-	int nSentences; //ôàêòè÷åñêîå ÷èñëî ñëîâ â ïðåäëîæåíèè
-	Sentence& operator[](int index); //ïåðåãðóçêà îïåðàòîðà èíäåêñàöèè
-	int sentencesAttributes[maxSentences]; //ìàññèâ ïðèçíàêîâ ïðèäëîæåíèé:
-	   // 0 - àòðèáóò íå óñòàíîâëåí (ïî óìîë÷àíèþ);
-	   // 1 - ïîâåñòâîâàòåëüíîå ïðåäëîæåíèå;
-	   // 2 - âîïðîñèòåëüíîå ïðåäëîæåíèå;
-	   // 3 - âîñêëèöàòåëüíîå ïðåäëîæåíèå.
-	Text(); //êîíñòðóêòîð
+	Sentence* sentences[maxSentences]; //массив из указателей на предложения в тексте
+	int nSentences; //фактическое число слов в предложении
+	Sentence& operator[](int index); //перегрузка оператора индексации
+	int sentencesAttributes[maxSentences]; //массив признаков придложений:
+	   // 0 - атрибут не установлен (по умолчанию);
+	   // 1 - повествовательное предложение;
+	   // 2 - вопросительное предложение;
+	   // 3 - восклицательное предложение.
+	Text(); //конструктор
 };
 Text::Text() {
 	nSentences = 0;
@@ -51,7 +51,25 @@ Sentence& Text::operator[](int index)
 	return sentences[index];
 	}
 //---------------------------------------------------------------------
-Sentence& Text::operator[](int index)
+char*& Sentence::operator[](int index)
+{
+	words[index];
+}
+//---------------------------------------------------------------------
+ostream& operator <<(ostream& out, Sentence& sentence)
+{
+	for (int i = 0; i < sentence.nWords; i++)
+		out << sentence.words[i] << " ";
+	out << '\b';
+	return out;
+}
+//---------------------------------------------------------------------
+ostream& operator <<(ostream& out, Text& text)
+{
+	for (int i = 0; i < text.nSentences; i++)
+		out << text.sentences[i] << '.' << endl;
+	return out;
+}
 //---------------------------------------------------------------------
 Sentence& GetSentence(char* str) {
 	Sentence sentence = *new Sentence;
@@ -72,4 +90,3 @@ Text& GetText(char* txt) {
 	return text;
 }
 //---------------------------------------------------------------------
-----------------------------
