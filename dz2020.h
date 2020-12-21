@@ -12,11 +12,7 @@ struct Sentence {
 	char* words[maxWords];  //массив указателей на слова в предложении
 	int nWords;  //фактическое число слов в предложении
 	char*& operator[](int index); //перегрузка оператора индексации
-	int wordsAttributes[maxWords]; //массив признаков слов:
-		// 0 - атрибут не установлен (по умолчанию);
-		// 1 - слово совпадает с последним словом предложения;
-		// 2 - повторяющееся слово;
-		// 3 - неповторяющееся слово.
+	int wordsAttributes[maxWords]; //массив признаков слов
 	Sentence(); //конструктор
 };
 Sentence::Sentence() {
@@ -32,11 +28,7 @@ struct Text {
 	Sentence sentences[maxSentences]; //массив из указателей на предложения в тексте
 	int nSentences; //фактическое число слов в предложении
 	Sentence& operator[](int index); //перегрузка оператора индексации
-	int sentencesAttributes[maxSentences]; //массив признаков придложений:
-	   // 0 - атрибут не установлен (по умолчанию);
-	   // 1 - повествовательное предложение;
-	   // 2 - вопросительное предложение;
-	   // 3 - восклицательное предложение.
+	int sentencesAttributes[maxSentences]; //массив признаков придложений
 	Text(); //конструктор
 };
 Text::Text() {
@@ -53,7 +45,7 @@ Sentence& GetSentence(char*);
 Sentence& Text::operator[](int index)
 {
 	return sentences[index];
-	}
+}
 //---------------------------------------------------------------------
 char*& Sentence::operator[](int index)
 {
@@ -73,27 +65,6 @@ ostream& operator <<(ostream& out, Text& text)
 	for (int i = 0; i < text.nSentences - 1; i++)
 		out << text.sentences[i] << '.' << endl;
 	return out;
-}
-//---------------------------------------------------------------------
-void markRepeatedWord(Text& text)       //отметить в тексте повторяющеися слова 
-{
-	for (int k = 0; k < text.nSentences; k++) 
-	{
-		for (int i = 0; i < text.sentences[k].nWords; i++)
-		{
-			if (text.sentences[k].wordsAttributes[i] == 0)
-			{
-				for (int j = i + 1; j < text[k].nWords; j++)
-				{
-					if (strcmp(text[k][i], text[k][j]) == 0)
-					{
-						text[k].wordsAttributes[j] = 2; //повторное вхождение слова
-						text[k].wordsAttributes[i] = 1; //первое вхождение слова
-					}
-				}
-			}
-		}
-	}
 }
 //---------------------------------------------------------------------
 Text& GetText(char* txt) {
@@ -146,5 +117,68 @@ char* inputText()
 	}
 	_putch('\n');
 	return str;
+}
+//---------------------------------------------------------------------
+//<ДЗ для варианта 18>
+void delWords(Sentence& sentence) {              //удаление слов, равных последнему слову в предложении.
+	for (int i = 0; i < sentence.nWords - 1; i++)
+	{
+		if (strcmp(sentence[i], sentence[sentence.nWords - 1]) == 0)
+		{
+			for (int j = i; j < sentence.nWords - 1; j++)
+				sentence[j] = sentence[j + 1];
+			--sentence.nWords;
+			--i;
+		}
+	}
+
+	return;
+}
+
+void Changes(Sentence& sentence) {               //замена окончаний у слов
+	for (int i = 0; i < sentence.nWords; i++)
+	{
+		char* word = new char[maxWords];
+		if ((strcmp((sentence[i] + (strlen(sentence[i]) - 2)), "ov") == 0)
+			|| (strcmp((sentence[i] + (strlen(sentence[i]) - 2)), "in") == 0)
+			|| (strcmp((sentence[i] + (strlen(sentence[i]) - 2)), "ev") == 0))
+		{
+			for (int j = 0; j < strlen(sentence[i]) - 2; j++)
+				word[j] = sentence[i][j];
+			word[strlen(sentence[i]) - 2] = 'i';
+			word[strlen(sentence[i]) - 1] = 'd';
+			word[strlen(sentence[i])] = 'z';
+			word[strlen(sentence[i]) + 1] = 'e';
+			sentence.words[i] = word;
+		}
+		if ((strcmp((sentence[i] + (strlen(sentence[i]) - 3)), "ova") == 0)
+			|| (strcmp((sentence[i] + (strlen(sentence[i]) - 3)), "ina") == 0)
+			|| (strcmp((sentence[i] + (strlen(sentence[i]) - 3)), "eva") == 0))
+		{
+			for (int j = 0; j < strlen(sentence[i]) - 3; j++)
+				word[j] = sentence[i][j];
+			word[strlen(sentence[i]) - 3] = 'i';
+			word[strlen(sentence[i]) - 2] = 'd';
+			word[strlen(sentence[i]) - 1] = 'z';
+			word[strlen(sentence[i])] = 'e';
+			sentence.words[i] = word;
+		}
+	}
+	return;
+}
+void dz18(Text& text) {
+	cout << endl << "\"Оставить в предложениях слова, отличающихся от последнего слова предложения и если\n"
+		<< "слово оканчивается на ov, ova, in, ina, ev, eva, заменить это окончание на idze.\"\n" << endl;
+
+	cout << "Печать текста после удаления слов, совпадающих с последним:\n";
+	for (int k = 0; k < text.nSentences; k++)
+		delWords(text.sentences[k]);
+	cout << text << endl;
+
+	cout << "Печать текста после замены окончаний ov, ova, in, ina, ev, eva на idze:\n";
+	for (int k = 0; k < text.nSentences - 1; k++)
+		Changes(text.sentences[k]);
+	cout << text << endl;
+	return;
 }
 //---------------------------------------------------------------------
