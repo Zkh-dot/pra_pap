@@ -13,6 +13,8 @@ struct Sentence {
 	int nWords;  //фактическое число слов в предложении
 	char*& operator[](int index); //перегрузка оператора индексации
 	int wordsAttributes[maxWords]; //массив признаков слов
+			// 0 - атрибут не установлен (по умолчанию);
+			// 1 - слово имеет запятую после себя;
 	Sentence(); //конструктор
 };
 Sentence::Sentence() {
@@ -54,8 +56,12 @@ char*& Sentence::operator[](int index)
 //---------------------------------------------------------------------
 ostream& operator <<(ostream& out, Sentence& sentence)
 {
-	for (int i = 0; i < sentence.nWords; i++)
-		out << sentence.words[i] << " ";
+	for (int i = 0; i < sentence.nWords; i++) {
+		out << sentence.words[i];
+		if (sentence.wordsAttributes[i] == 1)
+			out << ",";
+		out << " ";
+	}
 	out << '\b';
 	return out;
 }
@@ -79,10 +85,16 @@ Text& GetText(char* txt) {
 Sentence& GetSentence(char* str) {
 	Sentence sentence = *new Sentence;
 	sentence.nWords = 0;
-	const char* wordDelims = " ,";
+	const char* wordDelims = " ";
 	char* word, * nextWord = str;
-	while (word = strtok_s(nextWord, wordDelims, &nextWord))
-		sentence.words[sentence.nWords++] = word;
+	while (word = strtok_s(nextWord, wordDelims, &nextWord)) {
+		if (word[strlen(word) - 1] == ',') {
+			sentence.wordsAttributes[sentence.nWords] = 1;
+			word[strlen(word) - 1] = '\0';
+		}
+		sentence.words[sentence.nWords] = word;
+		sentence.nWords++;
+	}
 	return sentence;
 }
 //---------------------------------------------------------------------
@@ -181,4 +193,5 @@ void dz18(Text& text) {
 	cout << text << endl;
 	return;
 }
-//---------------------------------------------------------------------
+//--------------------------------------------------------------------
+//<ДЗ для варианта 12>
