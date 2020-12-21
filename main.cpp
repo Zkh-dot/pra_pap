@@ -13,19 +13,19 @@ int main() {
 	char ch = 'x';
 	while (true) {
 		switch (menu()) {
-		case 1: txt = inputText();
+		case 1: txt = inputText();    //Введение текста
 			cout << txt << endl;
 			break;
-		case 2: text = GetText(txt);
-			cout << endl << text << endl;
+		case 2: text = GetText(txt);   //Заполнение структур Text и Sentence
+			cout << text << endl;
 			break;
-		case 3: cout << text[0][0] + 2 << endl;
-				break;
-		case 4: cout << "Выполнено действие dz18";
+		case 3: cout << text[0][0] /*[2]*/ << endl;   //Распечатка первого слова в тексте 
+			break;
+		case 4: dz18(text);         //Вызов функции для моего варианта
 			break;
 			//  <вызов функции, реализующей вариант другого члена группы>
-		case 5: cout << "Выполнено действие dz12";
-			break;	
+		case 5: cout << "Выполнено действие dz12\n";
+			break;
 		case 6: delete[] txt; return 0;
 		default: cout << ("Надо вводить числа от 1 до 6\n");
 			break;
