@@ -143,7 +143,7 @@ void delWords(Sentence& sentence) {              //удаление слов, р
 			--i;
 		}
 	}
-
+	//--sentence.nWords; //удаление последнего слова
 	return;
 }
 
@@ -179,7 +179,7 @@ void Changes(Sentence& sentence) {               //замена окончани
 	return;
 }
 void dz18(Text& text) {
-	cout << endl << "\"Оставить в предложениях слова, отличающихся от последнего слова предложения и если\n"
+	cout << endl << "\"Оставить в предложениях слова, отличающихся от последнего слова предложения, и если\n"
 		<< "слово оканчивается на ov, ova, in, ina, ev, eva, заменить это окончание на idze.\"\n" << endl;
 
 	cout << "Печать текста после удаления слов, совпадающих с последним:\n";
@@ -195,3 +195,42 @@ void dz18(Text& text) {
 }
 //--------------------------------------------------------------------
 //<ДЗ для варианта 12>
+
+void del_mal_words(Sentence& sentence)
+{
+	int leng = 0;
+	for (int i = 0; i < sentence.nWords; i++)
+	{
+		if (strlen(sentence[i]) > leng)
+			leng = strlen(sentence[i]);
+			
+	}
+
+	for (int i = 0; i < sentence.nWords; i++)
+	{
+		if (strlen(sentence[i]) < leng)
+		{
+			for (int j = i; j < sentence.nWords - 1; j++)
+				sentence[j] = sentence[j + 1];
+			--sentence.nWords;
+			--i;
+		}
+	}
+	return;
+}
+
+void dz12(Text& text)
+{
+	cout << endl << "Оставить в предложениях слова, отличающихся от последнего слова предложения и\n"
+		<< "удалить слова не максимальной длинны\n";
+	for (int k = 0; k <= text.nSentences; k++)
+		delWords(text.sentences[k]);
+	cout << text << endl;
+
+	cout << "финальный вариант:\n";
+	for (int k = 0; k < text.nSentences - 1; k++)
+		del_mal_words(text.sentences[k]);
+	cout << text << endl;
+	return;
+}
+//--------------------------------------------------------------------
